@@ -1,0 +1,17 @@
+# One question per line. Optionally add " || <correct SQL>" so --eval can auto-check GPT's answer
+# (execution accuracy, like the paper). Keep the correct SQL's columns minimal: just what the answer must contain.
+# Each group member: add YOUR OWN question at the bottom (required by the assignment). The SQL part is optional.
+Which lifts are closed right now? || SELECT name FROM lift WHERE is_open = 0
+How many guests are from Utah? || SELECT COUNT(*) FROM guest WHERE home_state = 'UT'
+What is the longest groomed blue run, and which lift serves it? || SELECT r.name, l.name FROM run r JOIN lift l ON l.lift_id = r.lift_id WHERE r.difficulty = 'blue' AND r.is_groomed = 1 ORDER BY r.length_ft DESC LIMIT 1
+Which lift had the most scans in February 2026? || SELECT l.name FROM lift_scan s JOIN lift l ON l.lift_id = s.lift_id WHERE s.scan_time LIKE '2026-02%' GROUP BY l.lift_id ORDER BY COUNT(*) DESC LIMIT 1
+Which guest rode lifts the most times, and how many rides was that? || SELECT g.first_name, g.last_name, COUNT(*) FROM lift_scan s JOIN pass p ON p.pass_id = s.pass_id JOIN guest g ON g.guest_id = p.guest_id GROUP BY g.guest_id ORDER BY COUNT(*) DESC LIMIT 1
+How much total revenue came from pass sales, broken down by pass type? || SELECT pt.name, SUM(pt.price) FROM pass p JOIN pass_type pt ON pt.pass_type_id = p.pass_type_id GROUP BY pt.pass_type_id
+Which instructor earned the most from lessons? || SELECT i.first_name, i.last_name FROM lesson l JOIN instructor i ON i.instructor_id = l.instructor_id GROUP BY i.instructor_id ORDER BY SUM(l.hours * i.hourly_rate) DESC LIMIT 1
+Do any expert skiers take lessons? || SELECT DISTINCT g.guest_id FROM lesson l JOIN guest g ON g.guest_id = l.guest_id WHERE g.skill_level = 'expert'
+What's the best lift for a beginner to ride?
+Who skied the most vertical feet? || SELECT g.first_name, g.last_name, SUM(l.vertical_ft) FROM lift_scan s JOIN lift l ON l.lift_id = s.lift_id JOIN pass p ON p.pass_id = s.pass_id JOIN guest g ON g.guest_id = p.guest_id GROUP BY g.guest_id ORDER BY SUM(l.vertical_ft) DESC LIMIT 1
+How busy is the mountain on weekends compared to weekdays?
+Which runs can I ski today if I only ride open lifts and want black diamonds? || SELECT r.name FROM run r JOIN lift l ON l.lift_id = r.lift_id WHERE l.is_open = 1 AND r.difficulty IN ('black', 'double black')
+# --- add your own below ---
+Which lift do season pass holders ride the most? || SELECT l.name, COUNT(*) FROM lift_scan s JOIN pass p ON p.pass_id = s.pass_id JOIN pass_type pt ON pt.pass_type_id = p.pass_type_id JOIN lift l ON l.lift_id = s.lift_id WHERE pt.name LIKE 'Season%' GROUP BY l.lift_id ORDER BY COUNT(*) DESC LIMIT 1
